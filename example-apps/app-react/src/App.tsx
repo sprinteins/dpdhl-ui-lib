@@ -21,6 +21,8 @@ function App() {
     const Tbody = adapt('dpdhl-tbody');
     const Tabs = adapt('dpdhl-tabs')
     const Tab = adapt('dpdhl-tab')
+    const Select = adapt('dpdhl-select');
+    const SelectItem = adapt('dpdhl-select-item');
 
     const [log, setLog] = useState('')
 
@@ -124,6 +126,20 @@ function App() {
                                 </Tab>
                             </Tabs>
                         </div>
+
+                    <div>
+                        <Select
+                            helpertext="Helper text"
+                            placeholder="Select field"
+                            label="Label"
+                            on:selectOne={(event:any) => console.log(event.detail)}
+                            error={false}
+                        >
+                            <SelectItem label="Option A" value="option-a" />
+                            <SelectItem label="Option B" value="option-b" />
+                            <SelectItem label="Option C" value="option-c" />
+                        </Select>
+                    </div>
 
                 </div>
 

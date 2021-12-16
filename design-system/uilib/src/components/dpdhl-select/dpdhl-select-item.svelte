@@ -2,20 +2,15 @@
     export const KeyItemAdded = 'itemadded'
 </script>
 <script lang='ts'>
-    import { onMount } from 'svelte'
-
-    let contentRef: HTMLElement
-    function itemAdded(){
-        if(!contentRef) { return }
-        contentRef.dispatchEvent(new CustomEvent(KeyItemAdded,{
+    function itemAdded(node: HTMLSpanElement){
+        node.dispatchEvent(new CustomEvent(KeyItemAdded,{
             bubbles: true,
             composed: true,
         }))
     }
-    onMount(itemAdded);
 </script>
 <svelte:options tag="dpdhl-select-item" />
 
-<span>
+<span use:itemAdded>
     <slot />
 </span>

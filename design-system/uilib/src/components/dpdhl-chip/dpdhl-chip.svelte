@@ -38,9 +38,7 @@
         border:        1px var(--color-gray45) solid;
         border-radius: var(--border-radius);
         display:       inline-block;
-
-        padding: 0.5em;
-    
+        padding: 0.32em;
     }
 
     .content{

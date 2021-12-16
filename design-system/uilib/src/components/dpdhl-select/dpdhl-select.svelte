@@ -1,231 +1,322 @@
-<script lang="ts">
-    import { onMount } from 'svelte'
-import { makeEvent } from '../../x/util/dispatch';
-    import "../dpdhl-icon"
-    import { KeyItemAdded } from './dpdhl-select-item.svelte'
-    
-    export let placeholder = ""
-    $: placholderItem = {
-        label: placeholder,
-        value: undefined,
-    }
-
-    interface Item {
-        label: string
-        value: unknown
-    }
-
-    let container: HTMLElement
-    let items: Item[] = []
-    let assignedElements: HTMLElement[] = []
-
-    onMount(() => {
-        registerItems();
-        container.addEventListener(KeyItemAdded, registerItems)
-    })    
-
-    function registerItems(){
-        const slot = container.childNodes[0] as HTMLSlotElement
-
-        assignedElements = slot.assignedElements() as HTMLElement[]
-
-        assignedElements.forEach( (el, ei)  => {
-            const alreadyRegistered = el.hasAttribute('registered')
-            if( alreadyRegistered ){
-                return;
-            }
-            el.setAttribute('registered','');
-            
-
-            // Label
-            const label = el.getAttribute('label')
-            const value = el.getAttribute('value')
-            if(items){ 
-                items[ei] = {
-                    label,
-                    value
-                }
-            }
-            
-            // event
-            // el.addEventListener(KeyLabelChange, onLabelChange.bind(undefined, ei))
-        
-            // activate tab
-            // if(el.hasAttribute(keyActivate)){ 
-            //     activateTab(ei)
-            // }
-        });
-    }
-
-    let open = true;
-    function toggleOpen(){
-        open = !open;
-    }
-
-    let selectedItem: Item = placholderItem;
-    onMount(() => {
-        selectedItem = placholderItem;
-    })
-
-    let root: HTMLDivElement;
-    function onItemClick(item: Item){
-        console.debug('[DEBUG] ', {fn:"onItemClick", item} )
-        selectedItem = item;
-        open = false
-        root.dispatchEvent(makeEvent('select', item.value))
-
-    }
-
-
-    $: console.debug('[DEBUG] ', {selectedItem} )
-    $: console.debug('[DEBUG] ', {placholderItem} )
-
-</script>
 <svelte:options tag="dpdhl-select" />
 
-<div class="root" class:open bind:this={root}>
+<script lang="ts">
+	import { onMount } from "svelte";
+	import { makeEvent } from "../../x/util/dispatch";
+	import "../dpdhl-icon";
+	import { KeyItemAdded } from "./dpdhl-select-item.svelte";
+	import { clickOutside } from "./clickOutside.js";
+	import type { Item } from "./item";
 
-    <div class="select" >
+	export let multiple = false;
+	export let error = false;
+	$: _error = error;
 
-        <div class="dropdown" on:click={toggleOpen}>
-            <span class="placeholder">
-                {#if selectedItem}
-                    <dpdhl-copy>{selectedItem.label}</dpdhl-copy>
-                {/if}
-            </span>
-            <span class="chevron">
-                <dpdhl-icon width=16 height=16 color="var(--color-dhlred)" icon="chevron_down" />
-            </span>
+	export let helpertext = "";
+	export let label = "";
 
-        </div>
+	export let placeholder = "";
+	$: placholderItem = {
+		label: placeholder,
+		value: undefined,
+	};
 
-    </div>
+	$: items = [];
+	let assignedElements: HTMLElement[] = [];
+	let selectedItem: Item = placholderItem;
+	$: selectedItems = [];
 
-    <ul>
-        {#each items as item}
-            <li on:click={() => onItemClick(item)}>
-                <dpdhl-copy class="item-label">
-                    {item.label}
-                </dpdhl-copy>
-                {#if item === selectedItem}
-                    <dpdhl-icon icon="checkmark" width=16 color="var(--color-black)" />
-                {/if}
-            </li>
-        {/each}
-    </ul>
-</div>
+    function initItemRegistration(node: HTMLDivElement){
+        registerItems(node);
+        node.addEventListener(KeyItemAdded, () => registerItems(node))
+    }
 
 
-<div bind:this={container} class="container">
-    <slot />
-</div>
+    function registerItems(container: HTMLDivElement){
+		const slot = container.childNodes[0] as HTMLSlotElement;
+
+		assignedElements = slot.assignedElements() as HTMLElement[];
+
+		assignedElements.forEach((el, ei) => {
+			const alreadyRegistered = el.hasAttribute("registered");
+			if (alreadyRegistered) {
+				return;
+			}
+			el.setAttribute("registered", "");
+
+			// Label
+			const label = el.getAttribute("label");
+			const value = el.getAttribute("value");
+			if (items) {
+				items[ei] = {
+					label,
+					value,
+				};
+			}
+		});
+	}
+
+	let open = false;
+	function toggleOpen() {
+		open = !open;
+	}
+
+	function handleClickOutside(_) {
+		if (open) {
+			open = false;
+		}
+	}
+
+  	onMount(() => {
+		if (!multiple) {
+			selectedItem = placholderItem;
+		} else {
+			selectedItems = [];
+		}
+  	});
+
+  	let root: HTMLDivElement;
+
+	function onItemClick(item: Item) {
+		if (multiple) {
+			if (selectedItems.includes(item))
+				selectedItems = selectedItems.filter((m) => m.value !== item.value);
+			else 
+				selectedItems = [...selectedItems, item];
+			root.dispatchEvent(makeEvent("selectMany", selectedItems));
+		} else {
+			if (selectedItem === item) {
+				selectedItem = placholderItem;
+			} else {
+				selectedItem = item;
+			}
+			open = false;
+			root.dispatchEvent(makeEvent("selectOne", item.value));
+		}
+	}
+
+</script>
+<main>
+	{#if label}
+		<span class="label">{label}</span>
+	{/if}
+	<div class="select-container" class:open bind:this={root}>
+		<div class="select" class:open class:error={_error}>
+			<div class="dropdown" on:click={toggleOpen}>
+				<span class="content">
+					{#if multiple}
+						{#if !selectedItems.length}
+							<dpdhl-copy class="input-placeholder" class:error={_error}>{placeholder}</dpdhl-copy>
+						{:else}
+							<dpdhl-copy class="selected">
+								{selectedItems.map((item) => item.label).join(", ")}
+							</dpdhl-copy>
+						{/if}
+					{:else}
+						{#if !selectedItem || !selectedItem.value}
+							<dpdhl-copy class="input-placeholder" class:error={_error}>{placeholder}</dpdhl-copy>
+						{:else}
+							<dpdhl-copy class="selected">{selectedItem.label}</dpdhl-copy>
+						{/if}
+					{/if}
+				</span>
+				<span class="chevron">
+					<dpdhl-icon
+					width="16"
+					height="16"
+					color="var(--color-dhlred)"
+					icon="chevron_down"
+					/>
+				</span>
+			</div>
+		</div>
+
+		<ul class:error={_error} class:open={open}>
+			{#each items as item}
+				<li on:click={() => onItemClick(item)}>
+					<dpdhl-copy class="item-label">{item.label}</dpdhl-copy>
+					{#if (multiple && selectedItems.includes(item)) 
+						|| (!multiple && item === selectedItem)}
+						<dpdhl-icon icon="checkmark" width="16" height="16" color="var(--color-dhlred)" />
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	</div>
+	<div
+		use:initItemRegistration
+		class="container"
+		use:clickOutside
+		on:click_outside={handleClickOutside}
+	>
+		<slot />
+	</div>
+	{#if helpertext}
+		<span class="helper-text">{helpertext}</span>
+	{/if}
+</main>
 
 <style>
-    :host {
-        --border-color: var(--color-gray45);
-    }
+	:host {
+		--border-color: var(--color-gray45);
+	}
 
-    .root{
-        position: relative;
-        display:  inline-block;
-    }
+	.select-container {
+		position: relative;
+		display: inline-block;
+		width: 100%;
+	}
 
-    .select{
-        border-radius: var(--border-radius);
-        border-color:  var(--border-color);
-        border-width:  1px;
-        border-style:  solid;
-        display:       inline-block;
-        box-sizing:    border-box;
-        padding:       0;
-        min-width:     10rem;
-        position:      relative;
+	main {
+		text-align: left;
+	}
 
-    }
+	.select {
+		border-radius: var(--border-radius);
+		border-color: var(--border-color);
+		border-width: 1px;
+		border-style: solid;
+		flex-grow: 1;
+		box-sizing: border-box;
+		padding: 0;
+		position: relative;
+		height: 3rem;
+	}
 
-    .dropdown {
-        display:        flex;
-        flex-direction: row;
-        padding:        0.5rem;
-        cursor:         pointer;
-    }
+	.select.error {
+		border-color: 	var(--color-dhlred);
+		color: 			var(--color-dhlred);
+		background: 	var(--color-dhlred-light);
+	}
 
-    .placeholder{
-        flex-grow: 1;
-    }
+	.select.open {
+		border-width: 	2px;
+		border-color: 	var(--color-black);
+	}
 
-    .chevron{
-        flex-grow:  0;
-        display:    inline-block;
-        text-align: center;
-        max-width:  1rem;
-        overflow:   hidden;
-        align-self: center;
+	.select.open.error {
+		border-color: 	var(--color-dhlred);
+	}
 
-        transition: transform 0.1s;
-    }
+	.dropdown {
+		padding: 		0.8rem 0.5rem;
+		cursor: 		pointer;
+		line-height: 	0.8rem;
+	}
 
-    .open .chevron{
-        transform: rotate(-180deg);
-        
-    }
+	.content {
+		flex-grow: 1;
+	}
 
-    .container {
-        display: none;
-    }
-    .item-label{
-        flex-grow: 1;
-    }
+	.chevron {
+		display: 	inline-block;
+		text-align: center;
+		width: 		1rem;
+		overflow: 	hidden;
+		align-self: center;
+		margin-top: 0.16rem;
+        transition:                 transform 0.1s;
+        transition-timing-function: ease;
+	}
 
-    ul {
-        display:    none;
-        margin:     0;
-        padding:    0;
-        width:      100%;
-        background: var(--color-white);
-        position:   absolute;
-        box-sizing: border-box;
+	.open .chevron {
+        transform: scale(1, -1);
+	}
 
-        border-width:            1px;
-        border-style:            solid;
-        border-radius:           var(--border-radius);
-        border-color:            var(--border-color);
-        border-top:              none;
-        border-top-left-radius:  0;
-        border-top-right-radius: 0;
-    }
+	.container {
+		display: none;
+	}
+	.item-label {
+		flex-grow: 1;
+	}
 
-    .open ul {
-        display: block;
-    }
+	ul {
+		display: 	none;
+		margin: 	0;
+		padding: 	0;
+		width: 		100%;
+		background: var(--color-white);
+		position: 	absolute;
+		box-sizing: border-box;
+		border-width: 	1px;
+		border-style: 	solid;
+		border-radius: 	var(--border-radius);
+		border-color: 	var(--border-color);
+		border-top: 	none;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
 
-    .open .select {
-        border-bottom:              none;
-        border-bottom-left-radius:  0;
-        border-bottom-right-radius: 0;
-    }
+	.open ul {
+		display: 	block;
+		border: 	2px solid var(--color-black);
+		border-top: none;
+	}
 
-    .open .dropdown{
-        margin-bottom: 0.5rem;
-    }
+	ul.error {
+		border: 	2px solid var(--color-dhlred);
+		border-top: none;
+	}
 
-    li{
-        padding:        0.5rem;
-        cursor:         pointer;
-        display:        flex;
-        flex-direction: row;
-        border-top:     1px solid var(--color-gray20);
-    }
-    li:last-of-type {
-        border-bottom-left-radius:  calc( var(--border-radius) - 1px );
-        border-bottom-right-radius: calc( var(--border-radius) - 1px );
-    }
-    li:hover{
-        background-color: var(--color-steel-gray-medium);
-    }
-    li:focus{
-        border-top:    thin solid var(--color-gray20);
-        border-bottom: thin solid var(--color-gray20);
-    }
+	.open .select {
+		border-bottom: 				none;
+		border-bottom-left-radius: 	0;
+		border-bottom-right-radius: 0;
+		border-width: 				2px;
+	}
 
+	li {
+		padding: 		0.5rem;
+		cursor: 		pointer;
+		display: 		flex;
+		flex-direction: row;
+		border-top: 	1px solid var(--color-gray20);
+	}
+	li:last-of-type {
+		border-bottom-left-radius: 	calc(var(--border-radius) - 1px);
+		border-bottom-right-radius: calc(var(--border-radius) - 1px);
+	}
+	li:hover {
+        background-color: var(--color-gray05);
+	}
+	li:focus {
+		border-top: 	thin solid var(--color-gray20);
+		border-bottom: 	thin solid var(--color-gray20);
+	}
+
+	.input-placeholder {
+		color: 			var(--color-gray20);
+		display: 		inline-block;
+		width: 			calc(100% - 1.75rem);
+		white-space: 	nowrap;
+		overflow: 		hidden;
+		text-overflow: 	ellipsis;
+		line-height: 	1rem;
+	}
+
+	.input-placeholder.error {
+		color: var(--color-dhlred);
+	}
+
+	.selected {
+		display: 		inline-block;
+		width: 			calc(100% - 1.75rem);
+		white-space: 	nowrap;
+		overflow: 		hidden;
+		text-overflow: 	ellipsis;
+		line-height: 	1rem;
+	}
+
+	.helper-text {
+		line-height: 	1rem;
+		font-size: 		0.875rem;
+		color: 			var(--color-gray67);
+	}
+
+	.label {
+		font-weight: 700;
+		font-size: 14px;
+		line-height: 1rem;
+		text-align: left;
+	}
 </style>
