@@ -21,8 +21,11 @@ function App() {
     const Tbody = adapt('dpdhl-tbody');
     const Tabs = adapt('dpdhl-tabs')
     const Tab = adapt('dpdhl-tab')
+    const Toggle = adapt('dpdhl-toggle')
 
     const [log, setLog] = useState('')
+
+    const [toggleChecked, setToggleChecked] = useState(false)
 
     const menuItems = [
         { label: "Menu 1", click: () => { alert('You have selected "Menu 1"') }},
@@ -123,6 +126,16 @@ function App() {
                                     luctus et ultrices posuere cubilia curae
                                 </Tab>
                             </Tabs>
+                        </div>
+
+                        <div>
+                            {/* Todo: checked prop always passes true even if falsy */}
+                            <Toggle
+                                onCheck={() => {setToggleChecked(!toggleChecked)}}
+                                name="toggle-example"
+                                checked={toggleChecked}
+                                >
+                            </Toggle>
                         </div>
 
                 </div>
