@@ -21,6 +21,8 @@ function App() {
     const Tbody = adapt('dpdhl-tbody');
     const Tabs = adapt('dpdhl-tabs')
     const Tab = adapt('dpdhl-tab')
+    const CheckboxGroup = adapt('dpdhl-checkbox-group');
+    const CheckboxItem = adapt('dpdhl-checkbox-item');
 
     const [log, setLog] = useState('')
 
@@ -123,6 +125,15 @@ function App() {
                                     luctus et ultrices posuere cubilia curae
                                 </Tab>
                             </Tabs>
+                        </div>
+
+                        <div>
+                            <CheckboxGroup onSelect={(event: { detail: any }) => {}}>
+                                <CheckboxItem label="Option A" value="option-a" />
+                                <CheckboxItem label="Option B" value="option-b" disabled/>
+                                <CheckboxItem label="Option C" value="option-c" error/>
+                                <CheckboxItem label="Option D" value="option-d" indeterminate />
+                            </CheckboxGroup>
                         </div>
 
                 </div>

@@ -111,4 +111,15 @@
         </dpdhl-tabs>
     </div>
 
+    <!-- TODO: checkbox group isn't displayed -->
+    <div style="width: 500px;">
+        <dpdhl-checkbox-group 
+            (select)="handleCheckboxSelect($event)">
+            <dpdhl-checkbox-item label="Option A" value="option-a"></dpdhl-checkbox-item>
+            <dpdhl-checkbox-item label="Option B" value="option-b" disabled="true"></dpdhl-checkbox-item>
+            <dpdhl-checkbox-item label="Option C" value="option-c" error="true"></dpdhl-checkbox-item>
+            <dpdhl-checkbox-item label="Option C" value="option-c" error="true"></dpdhl-checkbox-item>
+        </dpdhl-checkbox-group>
+    </div>
+
 </div>
