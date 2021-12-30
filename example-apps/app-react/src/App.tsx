@@ -21,8 +21,10 @@ function App() {
     const Tbody = adapt('dpdhl-tbody');
     const Tabs = adapt('dpdhl-tabs')
     const Tab = adapt('dpdhl-tab')
+    const Pagination = adapt('dpdhl-pagination')
 
     const [log, setLog] = useState('')
+    const [selectedPage, setSelectedPage] = useState(1)
 
     const menuItems = [
         { label: "Menu 1", click: () => { alert('You have selected "Menu 1"') }},
@@ -38,7 +40,7 @@ function App() {
         {title:"Row title", column1: "Table cell", column2: "Table cell"},
     ]
     const tableHeaders = ["","Column title 1", "Column title 2"]
-
+    
     return (
         <div className="App">
             <h1>React App</h1>
@@ -53,78 +55,83 @@ function App() {
                         >
                             Button
                         </Button>
-                        </div>
+                    </div>
 
-                        <div><Button>Button</Button></div>
-                        <div><Button type="text">Button</Button></div>
-                        <div><Button type="postyellow">Button</Button></div>
+                    <div><Button>Button</Button></div>
+                    <div><Button type="text">Button</Button></div>
+                    <div><Button type="postyellow">Button</Button></div>
 
-                        <div><Button size="small" type="primary">Button</Button></div>
-                        <div><Button size="small" type="secondary">Button</Button></div>
-                        <div><Button size="small" type="text">Button</Button></div>
-                        <div><Button size="small" type="postyellow">Button</Button></div>
+                    <div><Button size="small" type="primary">Button</Button></div>
+                    <div><Button size="small" type="secondary">Button</Button></div>
+                    <div><Button size="small" type="text">Button</Button></div>
+                    <div><Button size="small" type="postyellow">Button</Button></div>
 
-                        <div><Button size="tiny" type="primary">Button</Button></div>
-                        <div><Button size="tiny" type="secondary">Button</Button></div>
-                        <div><Button size="tiny" type="text">Button</Button></div>
-                        <div><Button size="tiny" type="postyellow">Button</Button></div>
+                    <div><Button size="tiny" type="primary">Button</Button></div>
+                    <div><Button size="tiny" type="secondary">Button</Button></div>
+                    <div><Button size="tiny" type="text">Button</Button></div>
+                    <div><Button size="tiny" type="postyellow">Button</Button></div>
 
-
-                        <div>
-                            <CardSimple
-                                title="Card Title"
-                                content="Card Content"
-                                button_label="main action"
-                                menu_items={menuItems}
-                                onClick={ () => { alert('🐞 you clicked main action' );}}
-                            />
-                        </div>
-
+                    <div>
+                        <CardSimple
+                            title="Card Title"
+                            content="Card Content"
+                            button_label="main action"
+                            menu_items={menuItems}
+                            onClick={ () => { alert('🐞 you clicked main action' );}}
+                        />
+                    </div>
 
 
-                        <div>
-                            <Table title={tableTitle} footer={tableFooter}>
-                                
-                                <Thead slot="head">
-                                    <Tr>
-                                    { tableHeaders.map( (header,hi) => <Td key={hi}>{header}</Td> )}
-                                    </Tr>
-                                </Thead>
+                    <div>
+                        <Table title={tableTitle} footer={tableFooter}>
+                            
+                            <Thead slot="head">
+                                <Tr>
+                                { tableHeaders.map( (header,hi) => <Td key={hi}>{header}</Td> )}
+                                </Tr>
+                            </Thead>
 
-                                <Tbody slot="body">
-                                    {tableRows.map( row => {
-                                        return (
-                                            <Tr>
-                                                {Object.values(row).map( (cell, ci) => <Td key={ci}>{cell}</Td> )}
-                                            </Tr>
-                                        )
-                                    })}
+                            <Tbody slot="body">
+                                {tableRows.map( row => {
+                                    return (
+                                        <Tr>
+                                            {Object.values(row).map( (cell, ci) => <Td key={ci}>{cell}</Td> )}
+                                        </Tr>
+                                    )
+                                })}
 
-                                </Tbody>
+                            </Tbody>
 
-                            </Table>
-                        </div>
+                        </Table>
+                    </div>
 
-                        <div>
-                            <Tabs>
-                                <Tab label="Tab 1 Title">
-                                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, 
-                                    sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                                    aliquyam erat, sed diam voluptua. 
-                                </Tab>
-                                <Tab label="Tab 2 Title" active>
-                                    At vero eos et accusam et justo duo dolores et ea rebum. 
-                                    Stet clita kasd gubergren, no sea takimata sanctus est 
-                                    Lorem ipsum dolor sit amet. 
-                                </Tab>
-                                <Tab label="Tab 3 Title">
-                                    Proin consectetur at dui ut mollis. Praesent sit amet tempor sem, 
-                                    et egestas lorem. Vestibulum ante ipsum primis in faucibus orci
-                                    luctus et ultrices posuere cubilia curae
-                                </Tab>
-                            </Tabs>
-                        </div>
-
+                    <div>
+                        <Tabs>
+                            <Tab label="Tab 1 Title">
+                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, 
+                                sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                                aliquyam erat, sed diam voluptua. 
+                            </Tab>
+                            <Tab label="Tab 2 Title" active>
+                                At vero eos et accusam et justo duo dolores et ea rebum. 
+                                Stet clita kasd gubergren, no sea takimata sanctus est 
+                                Lorem ipsum dolor sit amet. 
+                            </Tab>
+                            <Tab label="Tab 3 Title">
+                                Proin consectetur at dui ut mollis. Praesent sit amet tempor sem, 
+                                et egestas lorem. Vestibulum ante ipsum primis in faucibus orci
+                                luctus et ultrices posuere cubilia curae
+                            </Tab>
+                        </Tabs>
+                    </div>
+                    <div>
+                        <Pagination
+                            onSelect={(event: { detail: any; }) => setSelectedPage(event.detail)}
+                            defaultpage={selectedPage}
+                            maxpages={10}
+                            count={12}>
+                        </Pagination>
+                    </div>
                 </div>
 
             </Theme>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
     selector: 'app-kitchen-sink',
@@ -7,10 +7,16 @@ import { Component } from '@angular/core';
 })
 export class KitchenSinkComponent {
 
+    @Output() selectedPage: EventEmitter<any> = new EventEmitter();
+
     log = '';
 
     handleClick(buttonName: string){
         this.log = `clicked on ${buttonName}`
+    }
+
+    handleSelect(event: CustomEvent) {
+        this.log = `switched to ${event.detail}`
     }
 
     menuItems = [

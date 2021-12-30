@@ -1,0 +1,1 @@
+export { default as DPDHLPagination } from './dpdhl-pagination.svelte';

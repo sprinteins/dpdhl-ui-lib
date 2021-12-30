@@ -111,4 +111,13 @@
         </dpdhl-tabs>
     </div>
 
+    <div>
+        <dpdhl-pagination
+            (select)="handleSelect($event)"
+            defaultpage="2"
+            maxpages="10"
+            count="12">
+        </dpdhl-pagination>
+    </div>
+
 </div>
