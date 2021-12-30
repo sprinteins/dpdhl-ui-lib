@@ -111,4 +111,15 @@
         </dpdhl-tabs>
     </div>
 
+    <div>
+        <button (click)="showToast()">Show toast</button>
+        <dpdhl-toast 
+            [open]=isToastOpen
+            (close)="hideToast()"
+            type="error"
+            title="Custom title"
+            message="And here we go with a more detailed message."
+        ></dpdhl-toast>
+    </div>
+
 </div>

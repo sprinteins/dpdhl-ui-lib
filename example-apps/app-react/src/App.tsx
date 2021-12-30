@@ -21,8 +21,12 @@ function App() {
     const Tbody = adapt('dpdhl-tbody');
     const Tabs = adapt('dpdhl-tabs')
     const Tab = adapt('dpdhl-tab')
+    const Toast = adapt('dpdhl-toast')
 
     const [log, setLog] = useState('')
+    const [isToastOpen, setToastOpen] = useState(true);
+
+    console.log('isToastOpen: ', isToastOpen);
 
     const menuItems = [
         { label: "Menu 1", click: () => { alert('You have selected "Menu 1"') }},
@@ -124,6 +128,24 @@ function App() {
                                 </Tab>
                             </Tabs>
                         </div>
+                        <div>
+                            {isToastOpen && 
+                                <Toast
+                                    // open={isToastOpen}
+                                    onClose={() => setToastOpen(false)}
+                                    type="error"
+                                    title="Custom title"
+                                    message="And here we go with a more detailed message."/>
+                            }       
+                        </div>
+                        {/* TODO: open prop doesn't force Toast to update (in React only!) */}
+                        {/* <Toast
+                            open={isToastOpen}
+                            onClose={() => setToastOpen(false)}
+                            type="error"
+                            title="Custom title"
+                            message="And here we go with a more detailed message."
+                        /> */}
 
                 </div>
 

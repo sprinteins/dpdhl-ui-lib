@@ -57,11 +57,9 @@ function onBackgroundClick(){
     if( !_cancelable ){
         return
     }
-
     close()
 }
 
-	
 
 </script>
 
@@ -70,9 +68,7 @@ function onBackgroundClick(){
 
 {#if _open}
     <section>
-
         <div class="modal-background" on:click={onBackgroundClick}></div>
-
             <dpdhl-card role="dialog" aria-modal="true"  bind:this={modal}>  
                 <div slot="header">
                       <slot name="header" />

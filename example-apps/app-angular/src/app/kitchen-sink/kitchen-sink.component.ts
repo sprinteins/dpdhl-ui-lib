@@ -28,4 +28,14 @@ export class KitchenSinkComponent {
     ]
     tableHeaders = ["","Column title 1", "Column title 2"]
 
+    isToastOpen = true;
+
+    showToast() {
+        this.isToastOpen = true;
+    }
+
+    hideToast() {
+        this.isToastOpen = false;
+    }
+
 }
